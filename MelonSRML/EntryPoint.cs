@@ -13,6 +13,11 @@ using Il2CppMonomiPark.SlimeRancher.Damage;
 using MelonSRML.Console;
 using MelonSRML.EnumPatcher;
 using MelonSRML.SR2.Ranch;
+using System.Linq;
+using System;
+using Il2Cpp;
+using static UnityEngine.UI.InputField;
+using MelonSRML.SR2.Idents;
 
 namespace MelonSRML
 {
@@ -54,6 +59,23 @@ namespace MelonSRML
 
             HarmonyInstance.PatchAll();
             SystemContext.IsModded = true;
+
+            Debug.Log("LOADING SLIMES...");
+            Type[] slimes = Assembly.GetExecutingAssembly().GetTypes().Where(type => type.IsSubclassOf(typeof(ModdedSlime))).ToArray();
+            foreach (var slime in slimes)
+            {
+                ModdedSlime moddedSlimeInstance = (ModdedSlime)Activator.CreateInstance(slime);
+                moddedSlimeInstance.Init();
+                Debug.Log("Loaded 1 slime");
+            }
+
+            Type[] moddedIdents = Assembly.GetExecutingAssembly().GetTypes().Where(type => type.IsSubclassOf(typeof(ModdedIdent))).ToArray();
+            foreach (var moddedIdent in moddedIdents)
+            {
+                ModdedIdent moddedIdentInstance = (ModdedIdent)Activator.CreateInstance(moddedIdent);
+                moddedIdentInstance.Init();
+                Debug.Log("Loaded 1 slime");
+            }
         }
 
         public override void OnPreModsLoaded()
