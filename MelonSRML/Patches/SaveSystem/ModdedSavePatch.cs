@@ -30,9 +30,9 @@ namespace MelonSRML.Patches.SaveSystem
                 __instance.identifiableTypes.memberTypes.Add(ident.ident);
             }
 
-            foreach (IdentifiableType plort in ModdedIdent.moddedPlorts)
+            foreach (ModdedIdent plort in ModdedIdent.moddedPlorts)
             {
-                SRLookup.Get<IdentifiableTypeGroup>("PlortGroup").memberTypes.Add(plort);
+                SRLookup.Get<IdentifiableTypeGroup>("PlortGroup").memberTypes.Add(plort.ident);
             }
         }
     }

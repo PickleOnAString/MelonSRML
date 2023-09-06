@@ -1,4 +1,5 @@
-﻿using MelonSRML.Patches;
+﻿using Il2CppMonomiPark.SlimeRancher.UI;
+using MelonSRML.Patches;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -16,10 +17,13 @@ namespace MelonSRML.SR2.Idents
         public virtual IdentifiableTypeGroup foodGroup { get; }
         public virtual Type type { get; } = Type.OTHER;
 
+        public virtual MarketUI.PlortEntry plortEntry => null;
+        public virtual EconomyDirector.ValueMap valueMap => null;
+
         public IdentifiableType ident { get; private set; }
 
         public static List<ModdedIdent> moddedIdents = new List<ModdedIdent>();
-        public static List<IdentifiableType> moddedPlorts = new List<IdentifiableType>();
+        public static List<ModdedIdent> moddedPlorts = new List<ModdedIdent>();
 
         public void Init()
         {
@@ -34,11 +38,13 @@ namespace MelonSRML.SR2.Idents
             ident.localizationSuffix = localizationSuffix;
             ident.foodGroup = foodGroup;
 
+            Debug.Log("TESTER");
             switch (type)
             {
                 case Type.PLORT:
+                    Debug.Log("NAHHHH");
                     ident.IsPlort = true;
-                    moddedPlorts.Add(ident);
+                    moddedPlorts.Add(this);
                     break;
                 case Type.ANIMAL:
                     ident.IsAnimal = true;
@@ -67,6 +73,10 @@ namespace MelonSRML.SR2.Idents
             }
         }
 
+        /// <summary>
+        /// Gets the prefab of the <c>ModdedIdent</c>
+        /// </summary>
+        /// <returns></returns>
         public abstract GameObject GetPrefab();
 
         public enum Type

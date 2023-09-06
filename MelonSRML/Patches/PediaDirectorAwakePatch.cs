@@ -1,7 +1,11 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using HarmonyLib;
 using MelonSRML.SR2;
+using MelonSRML.SR2.Idents;
+using MelonSRML.SR2.Pedia;
 
 namespace MelonSRML.Patches
 {
@@ -18,6 +22,13 @@ namespace MelonSRML.Patches
 
                 if (pediaEntry.IsUnlockedInitially)
                     __instance.initUnlocked = __instance.initUnlocked.AddItem(pediaEntry).ToArray();
+            }
+
+            Type[] moddedPedias = Assembly.GetExecutingAssembly().GetTypes().Where(type => type.IsSubclassOf(typeof(ModdedPedia))).ToArray();
+            foreach (var moddedPedia in moddedPedias)
+            {
+                ModdedPedia moddedPediaIntance = (ModdedPedia)Activator.CreateInstance(moddedPedia);
+                __instance.identDict.Add(moddedPediaIntance.PediaIdent, moddedPediaIntance.GetPedia());
             }
         }
     }

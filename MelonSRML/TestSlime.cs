@@ -1,6 +1,8 @@
 ﻿using Il2Cpp;
+using Il2CppMonomiPark.SlimeRancher.UI;
 using MelonSRML.SR2;
 using MelonSRML.SR2.Idents;
+using MelonSRML.SR2.Pedia;
 using MelonSRML.SR2.Slime;
 using MelonSRML.Utils;
 using System;
@@ -42,6 +44,17 @@ namespace MelonSRML
         public override string localizationSuffix => "test_plort";
         public override Type type => Type.PLORT;
 
+        public override MarketUI.PlortEntry plortEntry => new MarketUI.PlortEntry
+        {
+            identType = ident
+        };
+        public override EconomyDirector.ValueMap valueMap => new EconomyDirector.ValueMap
+        {
+            accept = ident.prefab.GetComponent<Identifiable>(),
+            fullSaturation = 7f,
+            value = 50f
+        };
+
         public override GameObject GetPrefab()
         {
             GameObject gameObject;
@@ -58,5 +71,24 @@ namespace MelonSRML
 
             return gameObject;
         }
+    }
+
+    public class TestSlimePedia : ModdedPedia
+    {
+        public override string PediaName => "Test";
+
+        public override PediaCategoryEnum PediaCategory => PediaCategoryEnum.Slimes;
+
+        public override IdentifiableType PediaIdent => SRLookup.Get<IdentifiableType>("Test");
+
+        public override string PediaIntro => "A slime made for testing, testy, test, test test";
+
+        public override bool AutoUnlocked => false;
+
+        public override ModdedPediaPage[] PediaPages => new ModdedPediaPage[]
+        {
+            new ModdedPediaPage("slimeology", "A rainbow slime"),
+            new ModdedPediaPage("plortonomics", "The Test plort is a full spectrum of colors, ranchers use it as a house decoation")
+        };
     }
 }

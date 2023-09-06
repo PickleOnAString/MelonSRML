@@ -6,27 +6,49 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using static Il2Cpp.SlimeSet;
 
 namespace MelonSRML.SR2.Slime
 {
     public abstract class ModdedSlime
     {
+        /// <summary>
+        /// Name of the <c>ModdedSlime</c>
+        /// </summary>
         public abstract string slimeName { get; }
 
+        /// <summary>
+        /// The slime that will be used as the base
+        /// </summary>
         public abstract string baseSlime { get; }
 
+        /// <summary>
+        /// The diet of the <c>ModdedSlime</c>
+        /// </summary>
         public abstract SlimeDiet diet { get; }
 
+        /// <summary>
+        /// The colors of the <c>ModdedSlime</c>
+        /// </summary>
         public abstract Color[] plate { get; }
 
+        /// <summary>
+        /// The color of the face
+        /// </summary>
         public virtual Color faceColor => Color.black;
 
+        /// <summary>
+        /// The icon of the <c>ModdedSlime</c>
+        /// </summary>
         public virtual string slimeIcon => $"Assets.{slimeName.ToLower()}_slime_ico";
 
         public SlimeDefinition definition;
         
         public static List<ModdedSlime> moddedSlimes = new List<ModdedSlime>();
 
+        /// <summary>
+        /// Initializes the modded slime
+        /// </summary>
         public virtual void Init()
         {
             moddedSlimes.Add(this);
@@ -35,7 +57,10 @@ namespace MelonSRML.SR2.Slime
 
             MelonEvents.OnSceneWasLoaded.Subscribe(OnSceneWasLoaded);
         }
-        
+
+        /// <summary>
+        /// Setups the <c>SlimeDefinition</c>
+        /// </summary>
         public virtual void SetupDefinition()
         {
             definition = ScriptableObject.CreateInstance<SlimeDefinition>();
@@ -79,6 +104,9 @@ namespace MelonSRML.SR2.Slime
             OnSceneAddSpawners(sceneName);
         }
         
+        /// <summary>
+        /// Builds the prefab
+        /// </summary>
         public virtual void SetupPrefab()
         {
             definition.prefab = SRLookup.CopyPrefab(SRLookup.Get<GameObject>("slimePink"));
@@ -88,6 +116,10 @@ namespace MelonSRML.SR2.Slime
             definition.prefab.GetComponent<Identifiable>().identType = definition;
             definition.prefab.GetComponent<SlimeEat>().slimeDefinition = definition;
         }
+
+        /// <summary>
+        /// Builds the <c>SlimeAppearance</c>
+        /// </summary>
         public virtual void SetupAppearance()
         {
             SlimeAppearance slimeAppearance = UnityEngine.Object.Instantiate(SRLookup.Get<SlimeAppearance>("PinkDefault"));
@@ -136,6 +168,9 @@ namespace MelonSRML.SR2.Slime
             slimeAppearance.hideFlags |= HideFlags.HideAndDontSave;
         }
 
+        /// <summary>
+        /// Registers the slime
+        /// </summary>
         public virtual void RegisterSlime()
         {
             SRSingleton<SceneContext>.Instance.SlimeAppearanceDirector.RegisterDependentAppearances(SRLookup.Get<SlimeDefinition>(slimeName), SRLookup.Get<SlimeDefinition>(slimeName).AppearancesDefault[0]);
@@ -144,6 +179,10 @@ namespace MelonSRML.SR2.Slime
             SRSingleton<GameContext>.Instance.SlimeDefinitions.slimeDefinitionsByIdentifiable.TryAdd(definition, definition);
         }
 
+        /// <summary>
+        /// Adds the slime to spawners
+        /// </summary>
+        /// <param name="sceneName"> The scene that was loaded </param>
         public virtual void OnSceneAddSpawners(string sceneName)
         {
             switch (sceneName.Contains("zoneFields"))
@@ -155,12 +194,16 @@ namespace MelonSRML.SR2.Slime
                         {
                             foreach (DirectedActorSpawner.SpawnConstraint spawnConstraint in directedSlimeSpawner.constraints)
                             {
-                                spawnConstraint.slimeset.members = spawnConstraint.slimeset.members.AddItem(new SlimeSet.Member
+                                Member slimeSet = new Member
                                 {
                                     prefab = definition.prefab,
                                     identType = definition,
                                     weight = 0.3f
-                                }).ToArray();
+                                };
+
+                                if (spawnConstraint.slimeset.members.Any(i => i.identType.name == slimeSet.identType.name)) return;
+                                
+                                spawnConstraint.slimeset.members = spawnConstraint.slimeset.members.AddItem(slimeSet).ToArray();
                             }
                         }
                         break;
